@@ -5,13 +5,34 @@ using System.Collections.Generic;
 
 namespace Alura.Estacionamento.Modelos
 {
-    public class Veiculo
+    public class Veiculo : IEnumerable<object[]>
     {
+
+        public IEnumerator<object[]> GetEnumerator()
+        {
+            yield return new object[]
+            {
+                new Veiculo
+                {
+                    Proprietario = "André Silva",
+                    Placa = "ASD-9999",
+                    Cor="Verde",
+                    Modelo="Fusca"
+                }
+            };
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
         //Campos    
         private string _placa;
         private string _proprietario;
         private TipoVeiculo _tipo;
-     
+        private string _ticket;
+
+       public string IdTicket { get; set; }
+        public string Ticket { get => _ticket; set => _ticket = value; }
+
         //Propriedades   
 
         public string Placa
@@ -62,16 +83,35 @@ namespace Alura.Estacionamento.Modelos
         /// Framework, entre outros benefícios.
         /// </summary>
         public string Cor { get; set; }
-        public double Largura { get; set; }    
+        public double Largura { get; set; }
         public double VelocidadeAtual { get; set; }
-        public string Modelo { get; set; }        
+        public string Modelo { get; set; }
         public string Proprietario
         {
-            get; set;
+            get { return _proprietario; } 
+            set {
+                    if (value.Length < 3)
+                    {
+                    throw new System.FormatException("Nome de proprietario não pode ser menor que 3 caracteres!");
+                    }
+                _proprietario = value;
+                }
         }
         public DateTime HoraEntrada { get; set; }
-        public DateTime HoraSaida { get; set; }   
-        public TipoVeiculo Tipo { get => _tipo; set => _tipo = value; }
+        public DateTime HoraSaida { get; set; }
+        //public TipoVeiculo Tipo { get => _tipo; set => _tipo = value; }
+        public TipoVeiculo Tipo
+        {
+            get { return _tipo; }
+            set
+            {
+                if (value == null)
+                {
+                    _tipo = TipoVeiculo.Automovel;
+                }
+                else { _tipo = value; }
+            }
+        }
 
         //Métodos
         public void Acelerar(int tempoSeg)
@@ -83,7 +123,7 @@ namespace Alura.Estacionamento.Modelos
         {
             this.VelocidadeAtual -= (tempoSeg * 15);
         }
-               
+
         //Construtor
         public Veiculo()
         {
@@ -92,9 +132,24 @@ namespace Alura.Estacionamento.Modelos
 
         public Veiculo(string proprietario)
         {
-           Proprietario = proprietario;
+            Proprietario = proprietario;
         }
 
-       
+        public void AlterarDados(Veiculo veiculoAlterado)
+        {
+            this.Proprietario = veiculoAlterado.Proprietario;
+            this.Modelo = veiculoAlterado.Modelo;
+            this.Largura = veiculoAlterado.Largura;
+            this.Cor = veiculoAlterado.Cor;
+        }
+
+        public override string ToString()
+        {
+            return $"Ficha do Veículo:\n " +
+                   $"Tipo do Veículo: {this.Tipo.ToString()}\n " +
+                   $"Proprietário: {this.Proprietario} \n" +
+                   $"Modelo: {this.Modelo} \n " +
+                   $"Placa: {this.Placa}\n";
+        }
     }
 }
